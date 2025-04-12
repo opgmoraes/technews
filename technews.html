@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tech News</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+    .container {
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 24px;
+      color: #00e153;
+      margin-bottom: 30px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #00e153;
+      margin-bottom: 15px;
+    }
+    .description {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    input[type="email"] {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: #e5e5e5;
+      font-size: 14px;
+      outline: none;
+    }
+    button {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: #00e153;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 0 10px #00e153;
+    }
+    button:hover {
+      box-shadow: 0 0 20px #00e153, 0 0 30px #00e153, 0 0 40px #00e153;
+    }
+    .footer {
+      margin-top: 30px;
+      color: #00e153;
+      font-size: 15px;
+    }
+    #successMsg {
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .zoomFade {
+      animation: zoomFade 0.5s ease;
+    }
+    @keyframes zoomFade {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Neon trail */
+    .neon-trail {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #00e153;
+      pointer-events: none;
+      box-shadow: 0 0 15px #00e153, 0 0 30px #00e153, 0 0 45px #00e153;
+      opacity: 0.7;
+      transform: translate(-50%, -50%);
+      transition: top 0.05s linear, left 0.05s linear;
+      z-index: 0;
+    }
+
+    .final-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #00a843;
+      text-align: center;
+      z-index: 10;
+      display: none;
+      animation: fadeUp 0.6s ease forwards;
+      max-width: 90%;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .success-msg {
+      font-size: 18px;
+      font-weight: bold;
+      color: #00a843;
+      margin-top: 10px;
+      display: none;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #e6ffe6;
+    }
+  </style>
+</head>
+<body>
+  <div class="neon-trail"></div>
+
+  <div class="container" id="formContainer">
+    <div class="logo">TECH NEWS</div>
+    <div class="title">A Newsletter preferida dos futuros desenvolvedores!</div>
+    <div class="description">
+      Conteúdos e as principais notícias do mundo da programação todos os dias na sua caixa de entrada! Já prepara o café.
+    </div>
+
+    <form id="newsletterForm">
+      <label for="email" style="text-align: left; font-size: 14px; font-weight: bold;">Inscreva-se *</label>
+      <input type="email" id="email" placeholder="Coloque o seu melhor email." required />
+      <button type="submit">Concluído!</button>
+      <div id="successMsg"></div>
+    </form>
+
+    <div class="footer">
+      Junte-se a + de 200 estudantes e profissionais de desenvolvimento.
+    </div>
+  </div>
+
+  <div class="success-msg" id="successMessage">
+    Email cadastrado com sucesso 😏
+  </div>
+
+  <div class="final-message" id="finalMessage">
+    Às 7:00 já tem conteúdo,<br>não esquece do café ☕
+  </div>
+
+  <script>
+    // Neon trail
+    const trail = document.querySelector('.neon-trail');
+    document.addEventListener('mousemove', (e) => {
+      trail.style.left = `${e.clientX}px`;
+      trail.style.top = `${e.clientY}px`;
+    });
+
+    // Newsletter
+    document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('email');
+      const email = emailInput.value.trim().toLowerCase();
+      const msg = document.getElementById('successMsg');
+      const finalMsg = document.getElementById('finalMessage');
+      const formContainer = document.getElementById('formContainer');
+      const successMessage = document.getElementById('successMessage');
+
+      if (!email.includes('@') || !email.includes('.')) {
+        alert('Por favor, insira um e-mail válido!');
+        return;
+      }
+
+      let emails = JSON.parse(localStorage.getItem('newsletterEmails')) || [];
+
+      if (emails.includes(email)) {
+        msg.textContent = '🧐 Esse e-mail já está na lista!';
+        msg.style.backgroundColor = '#fff6cc';
+        msg.style.color = '#a67c00';
+        msg.style.display = 'block';
+        msg.classList.add('zoomFade');
+        setTimeout(() => {
+          msg.style.display = 'none';
+          msg.classList.remove('zoomFade');
+        }, 3000);
+        return;
+      }
+
+      emails.push(email);
+      localStorage.setItem('newsletterEmails', JSON.stringify(emails));
+
+      emailInput.value = '';
+      formContainer.style.display = 'none';
+      successMessage.style.display = 'block';
+      setTimeout(() => {
+        successMessage.style.display = 'none';
+        finalMsg.style.display = 'block';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
